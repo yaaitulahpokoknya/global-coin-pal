@@ -10,6 +10,9 @@ import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    demo: search.demo === true || search.demo === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — NusaWallet" },
