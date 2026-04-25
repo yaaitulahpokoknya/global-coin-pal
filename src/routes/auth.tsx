@@ -65,10 +65,11 @@ function AuthPage() {
     }
   };
 
-  const handleDemoAccess = async () => {
+  const handleDemoAccess = useCallback(async () => {
     setLoading(true);
-    const demoEmail = `demo-${Date.now()}@example.com`;
-    const demoPassword = `NusaDemo-${Date.now()}!`;
+    const stamp = Date.now();
+    const demoEmail = `demo-${stamp}@example.com`;
+    const demoPassword = `NusaDemo-${stamp}!`;
     try {
       const { error } = await supabase.auth.signUp({
         email: demoEmail,
@@ -87,7 +88,20 @@ function AuthPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate({ to: "/dashboard" });
+        return;
+      }
+      if (search.demo && !demoTriggered.current) {
+        demoTriggered.current = true;
+        handleDemoAccess();
+      }
+    });
+  }, [navigate, search.demo, handleDemoAccess]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-12 relative overflow-hidden">
