@@ -10,13 +10,14 @@ NusaWallet adalah prototipe dompet **multi-mata uang** untuk Asia Tenggara (IDR,
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| 🔐 **Auth** | Email/password signup + auto-seed wallet via DB trigger |
+| 🔐 **Auth + KYC badge** | Email/password signup + auto-seed wallet via DB trigger |
 | 💰 **Multi-currency wallet** | 4 mata uang (IDR, USD, SGD, MYR), saldo real-time |
 | 📥 **Receive** | Simulasi terima pembayaran cross-border |
 | 🔄 **Convert** | Konversi antar mata uang dengan rate live |
 | 📤 **Send** | Transfer dengan validasi fraud sebelum eksekusi |
-| 🧠 **AI FX Recommendation** | Sinyal BUY / HOLD / WAIT pakai SMA 7-hari |
-| 🚨 **Fraud Detection** | Rule-based scoring (0–100), auto-block ≥70 |
+| 🔗 **Payment Link** | Public link `/pay/$token` — pengirim luar negeri tanpa signup |
+| 🧠 **AI FX Recommendation** | Sinyal BUY/HOLD/WAIT + **confidence bar** + **best/worst scenario** (SMA + σ) |
+| 🚨 **Fraud Detection** | Rule-based scoring (0–100), explainable reasons, auto-block ≥70 |
 | 🎭 **Demo Mode** | Klik "View demo" → langsung ke dashboard tanpa login |
 
 ---

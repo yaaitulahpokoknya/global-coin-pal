@@ -88,18 +88,24 @@ Tunjukkan:
 
 ---
 
-### **4. AI FX Recommendation (20 detik)**
+### **4. AI FX Recommendation (25 detik)**
 
-> *"AI engine kami pakai 7-day moving average. Kalau rate hari ini jauh di bawah rata-rata, artinya waktu yang bagus untuk buy."*
+> *"AI engine kami pakai 7-day moving average + standard deviation. Confidence bar tunjukkan seberapa kuat sinyalnya. Best/worst case kasih user range plausible."*
 
 Tunjukkan panel **AI FX Recommendation**:
 - Signal **BUY / HOLD / WAIT** (badge berwarna).
 - Headline contoh: *"Good time to buy USD"*.
-- 3 mini-card: USD/IDR, SGD/IDR, MYR/IDR dengan % vs 7d avg.
+- **Confidence bar** (0–100%, dari z-score).
+- 3 mini-card: **Best case / Today / Worst case** (mean ± 1σ).
+- 3 pair card: USD/IDR, SGD/IDR, MYR/IDR dengan % vs 7d avg.
 
 📐 **Rumus** (`src/lib/fx.ts → recommend()`):
 ```
-changePct = (today - sma7) / sma7 * 100
+changePct  = (today - sma7) / sma7 * 100
+zScore     = |today - sma7| / stdev7
+confidence = min(100, zScore * 50)
+scenario   = { best: sma7 - σ, today, worst: sma7 + σ }
+
 changePct < -0.4%  → BUY
 changePct > +0.6%  → WAIT
 otherwise          → HOLD
@@ -144,6 +150,18 @@ score ≥ 70 → BLOCK
 ```
 
 > *"Sistem berhasil memblokir transaksi mencurigakan tanpa intervensi manual. Inilah yang bikin NusaWallet aman untuk cross-border SEA."*
+
+---
+
+### **6.5. 🔗 Payment Link Demo (20 detik) — BONUS**
+
+> *"NusaWallet juga support payment link — pengirim luar negeri tinggal klik link, no signup needed."*
+
+- Klik **View payment link** (di kartu Fraud Protection) → buka tab baru `/pay/demo01`.
+- Tampilkan UI public-facing: nama recipient + KYC verified badge.
+- Pilih amount (preset $50/$100/$250/$500), isi nama pengirim.
+- Klik **Pay** → success screen dengan settlement < 1 detik.
+- *"Recipient menerima dalam local currency, tanpa USD spread."*
 
 ---
 
