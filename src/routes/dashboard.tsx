@@ -104,8 +104,10 @@ function Dashboard() {
   // Bootstrap
   useEffect(() => {
     if (isDemo) {
+      setUserId("demo-user");
       setFullName("Demo User");
       setWallets(createDemoWallets());
+      setTxs([]);
       setFxHistory(createDemoFxHistory());
       setLoading(false);
       return;
