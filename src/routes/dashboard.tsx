@@ -54,14 +54,35 @@ type Tx = {
   created_at: string;
 };
 
+const DEMO_NOW = "2026-04-25T04:30:00.000Z";
+
+const createDemoWallets = (): Wallet[] => [
+  { id: "demo-idr", currency: "IDR", balance: 2500000 },
+  { id: "demo-usd", currency: "USD", balance: 120 },
+  { id: "demo-sgd", currency: "SGD", balance: 0 },
+  { id: "demo-myr", currency: "MYR", balance: 0 },
+];
+
+const createDemoFxHistory = (): Record<Currency, FxPoint[]> => {
+  const days = Array.from({ length: 30 }, (_, i) => i);
+  return {
+    USD: [{ recorded_at: DEMO_NOW, rate: 1 }],
+    IDR: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 15720 + i * 18 + (i % 4) * 12 })),
+    SGD: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 1.34 + i * 0.001 })),
+    MYR: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 4.71 + i * 0.002 })),
+  };
+};
+
 function Dashboard() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const isDemo = search.demo;
   const [userId, setUserId] = useState<string | null>(null);
-  const [fullName, setFullName] = useState<string>("");
-  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [fullName, setFullName] = useState<string>(isDemo ? "Demo User" : "");
+  const [wallets, setWallets] = useState<Wallet[]>(() => isDemo ? createDemoWallets() : []);
   const [txs, setTxs] = useState<Tx[]>([]);
-  const [fxHistory, setFxHistory] = useState<Record<Currency, FxPoint[]>>({ IDR: [], USD: [], SGD: [], MYR: [] });
-  const [loading, setLoading] = useState(true);
+  const [fxHistory, setFxHistory] = useState<Record<Currency, FxPoint[]>>(() => isDemo ? createDemoFxHistory() : { IDR: [], USD: [], SGD: [], MYR: [] });
+  const [loading, setLoading] = useState(!isDemo);
 
   // Send dialog state
   const [sendOpen, setSendOpen] = useState(false);
