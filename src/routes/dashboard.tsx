@@ -184,19 +184,42 @@ function Dashboard() {
     const amount = 850;
     try {
       await updateBalance("USD", amount);
-      const { error } = await supabase.from("transactions").insert({
+
+      const tx: Tx = {
+        id: `demo-receive-${Date.now()}`,
         user_id: userId,
         type: "receive",
         status: "completed",
+        from_currency: null,
         to_currency: "USD",
+        from_amount: null,
         to_amount: amount,
+        fx_rate: null,
         counterparty: "Acme Corp (San Francisco)",
         country: "US",
         note: "Invoice #INV-2041 payment",
-      });
-      if (error) throw error;
+        fraud_reasons: null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+      } else {
+        const { error } = await supabase.from("transactions").insert({
+          user_id: userId,
+          type: "receive",
+          status: "completed",
+          to_currency: "USD",
+          to_amount: amount,
+          counterparty: "Acme Corp (San Francisco)",
+          country: "US",
+          note: "Invoice #INV-2041 payment",
+        });
+        if (error) throw error;
+        await loadAll(userId);
+      }
+
       toast.success(`Received ${formatMoney(amount, "USD")} from Acme Corp`);
-      await loadAll(userId);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
