@@ -70,10 +70,6 @@ function AuthPage() {
         <div className="flex justify-center mb-8">
           <Logo size="lg" />
         </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-mint text-primary-foreground font-bold">N</div>
-          <span className="font-display text-xl font-semibold">NusaWallet</span>
-        </Link>
-
         <div className="glass rounded-3xl p-8 shadow-card">
           <h1 className="font-display text-2xl font-semibold">
             {mode === "signup" ? "Create your wallet" : "Welcome back"}
