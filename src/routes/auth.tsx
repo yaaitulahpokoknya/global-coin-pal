@@ -61,10 +61,15 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 relative overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 grid-pattern opacity-30" />
+      <div aria-hidden className="pointer-events-none absolute -top-20 -left-20 h-[400px] w-[400px] rounded-full bg-primary/25 blur-[120px]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-20 -right-20 h-[400px] w-[400px] rounded-full bg-accent/20 blur-[120px]" />
       <Toaster theme="dark" />
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center gap-2 justify-center mb-8">
+      <div className="relative w-full max-w-md">
+        <div className="flex justify-center mb-8">
+          <Logo size="lg" />
+        </div>
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-mint text-primary-foreground font-bold">N</div>
           <span className="font-display text-xl font-semibold">NusaWallet</span>
         </Link>
