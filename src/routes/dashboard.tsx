@@ -486,6 +486,40 @@ function Dashboard() {
             </div>
             <p className="mt-3 font-display text-2xl font-semibold">{recommendation.headline}</p>
             <p className="mt-1 text-sm text-muted-foreground">{recommendation.detail}</p>
+
+            {/* Confidence bar */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>AI confidence</span>
+                <span className="font-medium text-foreground">{recommendation.confidence}%</span>
+              </div>
+              <div className="mt-1 h-1.5 rounded-full bg-secondary/60 overflow-hidden">
+                <div
+                  className={`h-full transition-all ${
+                    recommendation.signal === "buy" ? "bg-success" :
+                    recommendation.signal === "wait" ? "bg-warning" : "bg-primary"
+                  }`}
+                  style={{ width: `${recommendation.confidence}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Best/Worst scenario */}
+            <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+              <div className="rounded-lg bg-success/10 border border-success/20 p-2">
+                <div className="text-success uppercase tracking-wider text-[10px]">Best case</div>
+                <div className="font-medium mt-0.5">Rp {recommendation.scenario.best.toFixed(0)}</div>
+              </div>
+              <div className="rounded-lg bg-secondary/40 border border-border p-2">
+                <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Today</div>
+                <div className="font-medium mt-0.5">Rp {recommendation.scenario.today.toFixed(0)}</div>
+              </div>
+              <div className="rounded-lg bg-warning/10 border border-warning/20 p-2">
+                <div className="text-warning uppercase tracking-wider text-[10px]">Worst case</div>
+                <div className="font-medium mt-0.5">Rp {recommendation.scenario.worst.toFixed(0)}</div>
+              </div>
+            </div>
+
             <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
               {(["USD", "SGD", "MYR"] as Currency[]).map((c) => {
                 const points = c === "USD"
@@ -523,9 +557,16 @@ function Dashboard() {
               <div className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> High-risk country block</div>
               <div className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> Velocity throttling</div>
             </div>
-            <Button variant="glass" size="sm" className="mt-5" onClick={triggerFraudDemo}>
-              <ShieldAlert className="h-4 w-4" /> Trigger fraud demo
-            </Button>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button variant="glass" size="sm" onClick={triggerFraudDemo}>
+                <ShieldAlert className="h-4 w-4" /> Trigger fraud demo
+              </Button>
+              <Link to="/pay/$token" params={{ token: "demo01" }} target="_blank">
+                <Button variant="glass" size="sm">
+                  <Link2 className="h-4 w-4" /> View payment link
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
