@@ -26,6 +26,9 @@ import {
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
+  validateSearch: (search: Record<string, unknown>) => ({
+    demo: search.demo === true || search.demo === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Wallet — NusaWallet" },
