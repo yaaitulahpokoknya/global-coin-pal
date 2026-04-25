@@ -103,6 +103,14 @@ function Dashboard() {
 
   // Bootstrap
   useEffect(() => {
+    if (isDemo) {
+      setFullName("Demo User");
+      setWallets(createDemoWallets());
+      setFxHistory(createDemoFxHistory());
+      setLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         navigate({ to: "/auth" });
@@ -110,7 +118,7 @@ function Dashboard() {
       }
       setUserId(data.session.user.id);
     });
-  }, [navigate]);
+  }, [navigate, isDemo]);
 
   const loadAll = useCallback(async (uid: string) => {
     const [{ data: profile }, { data: w }, { data: t }, { data: fx }] = await Promise.all([
