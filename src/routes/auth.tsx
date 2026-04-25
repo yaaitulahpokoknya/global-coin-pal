@@ -65,29 +65,8 @@ function AuthPage() {
     }
   };
 
-  const handleDemoAccess = useCallback(async () => {
-    setLoading(true);
-    const stamp = Date.now();
-    const demoEmail = `demo-${stamp}@example.com`;
-    const demoPassword = `NusaDemo-${stamp}!`;
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: demoEmail,
-        password: demoPassword,
-        options: {
-          data: { full_name: "Demo User" },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-      if (error) throw error;
-      toast.success("Demo wallet ready");
-      navigate({ to: "/dashboard" });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Demo access failed";
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
+  const handleDemoAccess = useCallback(() => {
+    navigate({ to: "/dashboard", search: { demo: true } as never });
   }, [navigate]);
 
   useEffect(() => {
