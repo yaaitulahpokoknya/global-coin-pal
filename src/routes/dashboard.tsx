@@ -237,7 +237,9 @@ function Dashboard() {
     try {
       await updateBalance(convFrom, -amt);
       await updateBalance(convTo, received);
-      const { error } = await supabase.from("transactions").insert({
+
+      const tx: Tx = {
+        id: `demo-convert-${Date.now()}`,
         user_id: userId,
         type: "convert",
         status: "completed",
@@ -246,13 +248,34 @@ function Dashboard() {
         from_amount: amt,
         to_amount: received,
         fx_rate: rate,
+        counterparty: null,
+        country: null,
         note: `Converted ${convFrom} → ${convTo}`,
-      });
-      if (error) throw error;
+        fraud_reasons: null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+      } else {
+        const { error } = await supabase.from("transactions").insert({
+          user_id: userId,
+          type: "convert",
+          status: "completed",
+          from_currency: convFrom,
+          to_currency: convTo,
+          from_amount: amt,
+          to_amount: received,
+          fx_rate: rate,
+          note: `Converted ${convFrom} → ${convTo}`,
+        });
+        if (error) throw error;
+        await loadAll(userId);
+      }
+
       toast.success(`Converted to ${formatMoney(received, convTo)}`);
       setConvertOpen(false);
       setConvAmount("");
-      await loadAll(userId);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
