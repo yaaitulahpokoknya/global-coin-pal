@@ -302,6 +302,29 @@ function Dashboard() {
       const rate = pairRate(sendFrom, sendTo, ratesPerUsd);
       const received = convert(amt, sendFrom, sendTo, ratesPerUsd);
       await updateBalance(sendFrom, -amt);
+
+      const tx: Tx = {
+        id: `demo-send-${Date.now()}`,
+        user_id: userId,
+        type: "send",
+        status: result.shouldBlock ? "blocked" : result.level === "medium" ? "flagged" : "completed",
+        from_currency: sendFrom,
+        to_currency: sendTo,
+        from_amount: amt,
+        to_amount: received,
+        fx_rate: rate,
+        counterparty: sendRecipient,
+        country: sendCountry,
+        note: `Cross-border send to ${sendCountry}`,
+        fraud_reasons: result.reasons.length ? result.reasons : null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+        return;
+      }
+
       const { error } = await supabase.from("transactions").insert({
         user_id: userId,
         type: "send",
