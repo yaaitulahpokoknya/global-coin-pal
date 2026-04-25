@@ -304,23 +304,25 @@ function Dashboard() {
 
       <main className="mx-auto max-w-6xl px-6 pb-20">
         {/* Total + actions */}
-        <section className="glass rounded-3xl p-6 md:p-8 shadow-card">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <section className="glass rounded-3xl p-6 md:p-8 shadow-card relative overflow-hidden">
+          <div aria-hidden className="pointer-events-none absolute -top-24 -left-20 h-64 w-64 rounded-full bg-primary/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-20 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="text-sm text-muted-foreground">Total balance (USD)</div>
-              <div className="font-display text-4xl md:text-5xl font-semibold mt-1">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Total balance · USD</div>
+              <div className="font-display text-4xl md:text-5xl font-semibold mt-2 text-gradient-bicolor">
                 {formatMoney(totalUsd, "USD")}
               </div>
-              <div className="mt-1 text-sm text-muted-foreground">Across {wallets.length} currencies</div>
+              <div className="mt-2 text-sm text-muted-foreground">Across {wallets.length} currencies</div>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button variant="hero" size="lg" onClick={handleReceiveDemo}>
-                <ArrowDownLeft className="h-4 w-4" /> Receive (demo)
+                <ArrowDownLeft className="h-4 w-4" /> Receive
               </Button>
               <Button variant="glass" size="lg" onClick={() => setConvertOpen(true)}>
                 <ArrowRightLeft className="h-4 w-4" /> Convert
               </Button>
-              <Button variant="glass" size="lg" onClick={() => setSendOpen(true)}>
+              <Button variant="accent" size="lg" onClick={() => setSendOpen(true)}>
                 <ArrowUpRight className="h-4 w-4" /> Send
               </Button>
             </div>
