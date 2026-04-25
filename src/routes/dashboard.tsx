@@ -166,6 +166,12 @@ function Dashboard() {
     const w = wallets.find((x) => x.currency === currency);
     if (!w) return;
     const newBal = Number(w.balance) + delta;
+
+    if (isDemo) {
+      setWallets((current) => current.map((item) => item.currency === currency ? { ...item, balance: newBal } : item));
+      return;
+    }
+
     const { error } = await supabase.from("wallets").update({ balance: newBal }).eq("id", w.id);
     if (error) throw error;
   };
