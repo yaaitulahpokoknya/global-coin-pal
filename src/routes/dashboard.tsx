@@ -26,6 +26,9 @@ import {
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
+  validateSearch: (search: Record<string, unknown>) => ({
+    demo: search.demo === true || search.demo === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Wallet — NusaWallet" },
@@ -37,6 +40,7 @@ export const Route = createFileRoute("/dashboard")({
 type Wallet = { id: string; currency: Currency; balance: number };
 type Tx = {
   id: string;
+  user_id?: string;
   type: "receive" | "send" | "convert" | "topup";
   status: "completed" | "pending" | "flagged" | "blocked";
   from_currency: string | null;
@@ -51,14 +55,35 @@ type Tx = {
   created_at: string;
 };
 
+const DEMO_NOW = "2026-04-25T04:30:00.000Z";
+
+const createDemoWallets = (): Wallet[] => [
+  { id: "demo-idr", currency: "IDR", balance: 2500000 },
+  { id: "demo-usd", currency: "USD", balance: 120 },
+  { id: "demo-sgd", currency: "SGD", balance: 0 },
+  { id: "demo-myr", currency: "MYR", balance: 0 },
+];
+
+const createDemoFxHistory = (): Record<Currency, FxPoint[]> => {
+  const days = Array.from({ length: 30 }, (_, i) => i);
+  return {
+    USD: [{ recorded_at: DEMO_NOW, rate: 1 }],
+    IDR: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 15720 + i * 18 + (i % 4) * 12 })),
+    SGD: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 1.34 + i * 0.001 })),
+    MYR: days.map((i) => ({ recorded_at: new Date(Date.parse(DEMO_NOW) - i * 86400000).toISOString(), rate: 4.71 + i * 0.002 })),
+  };
+};
+
 function Dashboard() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const isDemo = search.demo;
   const [userId, setUserId] = useState<string | null>(null);
-  const [fullName, setFullName] = useState<string>("");
-  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [fullName, setFullName] = useState<string>(isDemo ? "Demo User" : "");
+  const [wallets, setWallets] = useState<Wallet[]>(() => isDemo ? createDemoWallets() : []);
   const [txs, setTxs] = useState<Tx[]>([]);
-  const [fxHistory, setFxHistory] = useState<Record<Currency, FxPoint[]>>({ IDR: [], USD: [], SGD: [], MYR: [] });
-  const [loading, setLoading] = useState(true);
+  const [fxHistory, setFxHistory] = useState<Record<Currency, FxPoint[]>>(() => isDemo ? createDemoFxHistory() : { IDR: [], USD: [], SGD: [], MYR: [] });
+  const [loading, setLoading] = useState(!isDemo);
 
   // Send dialog state
   const [sendOpen, setSendOpen] = useState(false);
@@ -79,6 +104,16 @@ function Dashboard() {
 
   // Bootstrap
   useEffect(() => {
+    if (isDemo) {
+      setUserId("demo-user");
+      setFullName("Demo User");
+      setWallets(createDemoWallets());
+      setTxs([]);
+      setFxHistory(createDemoFxHistory());
+      setLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         navigate({ to: "/auth" });
@@ -86,9 +121,11 @@ function Dashboard() {
       }
       setUserId(data.session.user.id);
     });
-  }, [navigate]);
+  }, [navigate, isDemo]);
 
   const loadAll = useCallback(async (uid: string) => {
+    if (isDemo) return;
+
     const [{ data: profile }, { data: w }, { data: t }, { data: fx }] = await Promise.all([
       supabase.from("profiles").select("full_name").eq("id", uid).maybeSingle(),
       supabase.from("wallets").select("id,currency,balance").eq("user_id", uid),
@@ -99,14 +136,14 @@ function Dashboard() {
     setWallets((w ?? []) as Wallet[]);
     setTxs((t ?? []) as Tx[]);
 
-    const grouped: Record<Currency, FxPoint[]> = { IDR: [], USD: [{ recorded_at: new Date().toISOString(), rate: 1 }], SGD: [], MYR: [] };
+    const grouped: Record<Currency, FxPoint[]> = { IDR: [], USD: [{ recorded_at: DEMO_NOW, rate: 1 }], SGD: [], MYR: [] };
     for (const row of fx ?? []) {
       const q = row.quote as Currency;
       if (q in grouped) grouped[q].push({ recorded_at: row.recorded_at, rate: Number(row.rate) });
     }
     setFxHistory(grouped);
     setLoading(false);
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     if (userId) loadAll(userId);
@@ -132,6 +169,12 @@ function Dashboard() {
     const w = wallets.find((x) => x.currency === currency);
     if (!w) return;
     const newBal = Number(w.balance) + delta;
+
+    if (isDemo) {
+      setWallets((current) => current.map((item) => item.currency === currency ? { ...item, balance: newBal } : item));
+      return;
+    }
+
     const { error } = await supabase.from("wallets").update({ balance: newBal }).eq("id", w.id);
     if (error) throw error;
   };
@@ -142,19 +185,42 @@ function Dashboard() {
     const amount = 850;
     try {
       await updateBalance("USD", amount);
-      const { error } = await supabase.from("transactions").insert({
+
+      const tx: Tx = {
+        id: `demo-receive-${Date.now()}`,
         user_id: userId,
         type: "receive",
         status: "completed",
+        from_currency: null,
         to_currency: "USD",
+        from_amount: null,
         to_amount: amount,
+        fx_rate: null,
         counterparty: "Acme Corp (San Francisco)",
         country: "US",
         note: "Invoice #INV-2041 payment",
-      });
-      if (error) throw error;
+        fraud_reasons: null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+      } else {
+        const { error } = await supabase.from("transactions").insert({
+          user_id: userId,
+          type: "receive",
+          status: "completed",
+          to_currency: "USD",
+          to_amount: amount,
+          counterparty: "Acme Corp (San Francisco)",
+          country: "US",
+          note: "Invoice #INV-2041 payment",
+        });
+        if (error) throw error;
+        await loadAll(userId);
+      }
+
       toast.success(`Received ${formatMoney(amount, "USD")} from Acme Corp`);
-      await loadAll(userId);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
@@ -171,7 +237,9 @@ function Dashboard() {
     try {
       await updateBalance(convFrom, -amt);
       await updateBalance(convTo, received);
-      const { error } = await supabase.from("transactions").insert({
+
+      const tx: Tx = {
+        id: `demo-convert-${Date.now()}`,
         user_id: userId,
         type: "convert",
         status: "completed",
@@ -180,13 +248,34 @@ function Dashboard() {
         from_amount: amt,
         to_amount: received,
         fx_rate: rate,
+        counterparty: null,
+        country: null,
         note: `Converted ${convFrom} → ${convTo}`,
-      });
-      if (error) throw error;
+        fraud_reasons: null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+      } else {
+        const { error } = await supabase.from("transactions").insert({
+          user_id: userId,
+          type: "convert",
+          status: "completed",
+          from_currency: convFrom,
+          to_currency: convTo,
+          from_amount: amt,
+          to_amount: received,
+          fx_rate: rate,
+          note: `Converted ${convFrom} → ${convTo}`,
+        });
+        if (error) throw error;
+        await loadAll(userId);
+      }
+
       toast.success(`Converted to ${formatMoney(received, convTo)}`);
       setConvertOpen(false);
       setConvAmount("");
-      await loadAll(userId);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
@@ -213,6 +302,29 @@ function Dashboard() {
       const rate = pairRate(sendFrom, sendTo, ratesPerUsd);
       const received = convert(amt, sendFrom, sendTo, ratesPerUsd);
       await updateBalance(sendFrom, -amt);
+
+      const tx: Tx = {
+        id: `demo-send-${Date.now()}`,
+        user_id: userId,
+        type: "send",
+        status: result.shouldBlock ? "blocked" : result.level === "medium" ? "flagged" : "completed",
+        from_currency: sendFrom,
+        to_currency: sendTo,
+        from_amount: amt,
+        to_amount: received,
+        fx_rate: rate,
+        counterparty: sendRecipient,
+        country: sendCountry,
+        note: `Cross-border send to ${sendCountry}`,
+        fraud_reasons: result.reasons.length ? result.reasons : null,
+        created_at: new Date().toISOString(),
+      };
+
+      if (isDemo) {
+        setTxs((current) => [tx, ...current]);
+        return;
+      }
+
       const { error } = await supabase.from("transactions").insert({
         user_id: userId,
         type: "send",
