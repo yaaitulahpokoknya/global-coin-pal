@@ -126,6 +126,9 @@ function AuthPage() {
             <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
               {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
             </Button>
+            <Button type="button" variant="accent" size="lg" className="w-full" disabled={loading} onClick={handleDemoAccess}>
+              Masuk demo instan
+            </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
