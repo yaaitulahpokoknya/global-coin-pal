@@ -412,6 +412,9 @@ function Dashboard() {
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Logo />
         <div className="flex items-center gap-3">
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-medium text-success">
+            <BadgeCheck className="h-3 w-3" /> KYC verified
+          </span>
           <span className="hidden text-sm text-muted-foreground sm:inline">Hi, <span className="text-foreground font-medium">{fullName || "there"}</span></span>
           <Button variant="glass" size="sm" onClick={handleLogout}><LogOut className="h-4 w-4" /> Sign out</Button>
         </div>
