@@ -7,6 +7,7 @@
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -35,6 +36,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -43,57 +46,64 @@
 :root {
   --radius: 1rem;
 
-  /* Background — deep navy gradient base */
-  --background: oklch(0.16 0.03 260);
+  /* Deep tech navy background */
+  --background: oklch(0.14 0.04 265);
   --foreground: oklch(0.98 0.005 250);
 
-  --card: oklch(0.21 0.035 260);
+  --card: oklch(0.19 0.04 265);
   --card-foreground: oklch(0.98 0.005 250);
 
-  --popover: oklch(0.22 0.035 260);
+  --popover: oklch(0.2 0.04 265);
   --popover-foreground: oklch(0.98 0.005 250);
 
-  /* Primary — electric mint (Revolut/Wise vibe) */
-  --primary: oklch(0.86 0.17 165);
-  --primary-foreground: oklch(0.15 0.04 260);
+  /* Primary — electric blue */
+  --primary: oklch(0.62 0.22 255);
+  --primary-foreground: oklch(0.99 0.005 250);
 
-  --secondary: oklch(0.27 0.04 260);
+  /* Accent — crimson red */
+  --accent: oklch(0.6 0.24 22);
+  --accent-foreground: oklch(0.99 0.005 250);
+
+  --secondary: oklch(0.26 0.04 265);
   --secondary-foreground: oklch(0.98 0.005 250);
 
-  --muted: oklch(0.25 0.03 260);
-  --muted-foreground: oklch(0.68 0.02 255);
+  --muted: oklch(0.23 0.03 265);
+  --muted-foreground: oklch(0.7 0.02 255);
 
-  --accent: oklch(0.7 0.18 285);
-  --accent-foreground: oklch(0.15 0.04 260);
+  --destructive: oklch(0.6 0.24 22);
+  --destructive-foreground: oklch(0.99 0.005 250);
 
-  --destructive: oklch(0.65 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 250);
-
-  --success: oklch(0.78 0.17 160);
-  --success-foreground: oklch(0.15 0.04 260);
+  --success: oklch(0.74 0.17 160);
+  --success-foreground: oklch(0.14 0.04 265);
 
   --warning: oklch(0.82 0.16 75);
-  --warning-foreground: oklch(0.15 0.04 260);
+  --warning-foreground: oklch(0.14 0.04 265);
 
-  --border: oklch(0.3 0.03 260 / 60%);
-  --input: oklch(0.28 0.03 260);
-  --ring: oklch(0.86 0.17 165);
+  --danger: oklch(0.6 0.24 22);
+  --danger-foreground: oklch(0.99 0.005 250);
+
+  --border: oklch(0.32 0.04 265 / 60%);
+  --input: oklch(0.26 0.04 265);
+  --ring: oklch(0.62 0.22 255);
 
   /* Brand gradients & shadows */
-  --gradient-mint: linear-gradient(135deg, oklch(0.88 0.16 165), oklch(0.78 0.18 195));
-  --gradient-violet: linear-gradient(135deg, oklch(0.7 0.2 285), oklch(0.62 0.22 320));
-  --gradient-hero: radial-gradient(1200px 600px at 0% 0%, oklch(0.3 0.12 270 / 60%), transparent 60%),
-                   radial-gradient(900px 500px at 100% 0%, oklch(0.4 0.14 180 / 35%), transparent 60%),
-                   linear-gradient(180deg, oklch(0.16 0.03 260), oklch(0.13 0.03 260));
-  --gradient-card: linear-gradient(140deg, oklch(0.24 0.04 265), oklch(0.18 0.03 260));
+  --gradient-primary: linear-gradient(135deg, oklch(0.62 0.22 255), oklch(0.55 0.24 270));
+  --gradient-accent: linear-gradient(135deg, oklch(0.6 0.24 22), oklch(0.55 0.25 12));
+  --gradient-bicolor: linear-gradient(120deg, oklch(0.62 0.22 255) 0%, oklch(0.55 0.24 270) 50%, oklch(0.6 0.24 22) 100%);
+  --gradient-card: linear-gradient(140deg, oklch(0.22 0.05 265), oklch(0.16 0.04 265));
+  --gradient-hero:
+    radial-gradient(900px 500px at 0% 0%, oklch(0.55 0.24 270 / 35%), transparent 60%),
+    radial-gradient(900px 500px at 100% 10%, oklch(0.6 0.24 22 / 25%), transparent 60%),
+    radial-gradient(800px 400px at 50% 100%, oklch(0.62 0.22 255 / 25%), transparent 60%),
+    linear-gradient(180deg, oklch(0.14 0.04 265), oklch(0.11 0.03 265));
 
-  --shadow-glow: 0 30px 80px -20px oklch(0.86 0.17 165 / 25%);
-  --shadow-card: 0 20px 60px -25px oklch(0.05 0.02 260 / 60%);
+  --shadow-glow-blue: 0 30px 80px -20px oklch(0.62 0.22 255 / 35%);
+  --shadow-glow-red: 0 30px 80px -20px oklch(0.6 0.24 22 / 30%);
+  --shadow-card: 0 20px 60px -25px oklch(0.04 0.02 265 / 70%);
 }
 
 .dark {
-  /* Same — single dark theme by default for fintech vibe */
-  --background: oklch(0.16 0.03 260);
+  --background: oklch(0.14 0.04 265);
   --foreground: oklch(0.98 0.005 250);
 }
 
@@ -115,15 +125,40 @@
 }
 
 @layer utilities {
-  .bg-gradient-mint { background: var(--gradient-mint); }
-  .bg-gradient-violet { background: var(--gradient-violet); }
+  .bg-gradient-primary { background: var(--gradient-primary); }
+  .bg-gradient-accent { background: var(--gradient-accent); }
+  .bg-gradient-bicolor { background: var(--gradient-bicolor); }
   .bg-gradient-card { background: var(--gradient-card); }
-  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .text-gradient-bicolor {
+    background: var(--gradient-bicolor);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .shadow-glow-blue { box-shadow: var(--shadow-glow-blue); }
+  .shadow-glow-red { box-shadow: var(--shadow-glow-red); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .glass {
-    background: oklch(0.22 0.035 260 / 70%);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid oklch(1 0 0 / 6%);
+    background: oklch(0.2 0.04 265 / 65%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid oklch(1 0 0 / 7%);
   }
+  .grid-pattern {
+    background-image:
+      linear-gradient(oklch(1 0 0 / 4%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 4%) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .ring-glow-blue {
+    box-shadow: 0 0 0 1px oklch(0.62 0.22 255 / 40%), 0 0 24px oklch(0.62 0.22 255 / 25%);
+  }
+  .ring-glow-red {
+    box-shadow: 0 0 0 1px oklch(0.6 0.24 22 / 40%), 0 0 24px oklch(0.6 0.24 22 / 25%);
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.3); }
+  }
+  .pulse-dot { animation: pulse-dot 1.8s ease-in-out infinite; }
 }
