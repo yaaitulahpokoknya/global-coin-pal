@@ -14,7 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fx_rates: {
+        Row: {
+          base: string
+          id: number
+          quote: string
+          rate: number
+          recorded_at: string
+        }
+        Insert: {
+          base: string
+          id?: number
+          quote: string
+          rate: number
+          recorded_at?: string
+        }
+        Update: {
+          base?: string
+          id?: number
+          quote?: string
+          rate?: number
+          recorded_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          counterparty: string | null
+          country: string | null
+          created_at: string
+          fraud_reasons: string[] | null
+          from_amount: number | null
+          from_currency: string | null
+          fx_rate: number | null
+          id: string
+          note: string | null
+          status: Database["public"]["Enums"]["tx_status"]
+          to_amount: number | null
+          to_currency: string | null
+          type: Database["public"]["Enums"]["tx_type"]
+          user_id: string
+        }
+        Insert: {
+          counterparty?: string | null
+          country?: string | null
+          created_at?: string
+          fraud_reasons?: string[] | null
+          from_amount?: number | null
+          from_currency?: string | null
+          fx_rate?: number | null
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["tx_status"]
+          to_amount?: number | null
+          to_currency?: string | null
+          type: Database["public"]["Enums"]["tx_type"]
+          user_id: string
+        }
+        Update: {
+          counterparty?: string | null
+          country?: string | null
+          created_at?: string
+          fraud_reasons?: string[] | null
+          from_amount?: number | null
+          from_currency?: string | null
+          fx_rate?: number | null
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["tx_status"]
+          to_amount?: number | null
+          to_currency?: string | null
+          type?: Database["public"]["Enums"]["tx_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +145,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      tx_status: "completed" | "pending" | "flagged" | "blocked"
+      tx_type: "receive" | "send" | "convert" | "topup"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +273,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      tx_status: ["completed", "pending", "flagged", "blocked"],
+      tx_type: ["receive", "send", "convert", "topup"],
+    },
   },
 } as const
