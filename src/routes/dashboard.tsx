@@ -40,6 +40,7 @@ export const Route = createFileRoute("/dashboard")({
 type Wallet = { id: string; currency: Currency; balance: number };
 type Tx = {
   id: string;
+  user_id?: string;
   type: "receive" | "send" | "convert" | "topup";
   status: "completed" | "pending" | "flagged" | "blocked";
   from_currency: string | null;
