@@ -37,7 +37,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -46,6 +46,11 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (!data.session) {
+          toast.success("Account created. For demo, use the instant demo access below.");
+          setMode("signin");
+          return;
+        }
         toast.success("Account created — welcome!");
         navigate({ to: "/dashboard" });
       } else {
@@ -55,6 +60,30 @@ function AuthPage() {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoAccess = async () => {
+    setLoading(true);
+    const demoEmail = `demo-${Date.now()}@example.com`;
+    const demoPassword = `NusaDemo-${Date.now()}!`;
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: demoEmail,
+        password: demoPassword,
+        options: {
+          data: { full_name: "Demo User" },
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) throw error;
+      toast.success("Demo wallet ready");
+      navigate({ to: "/dashboard" });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Demo access failed";
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -96,6 +125,9 @@ function AuthPage() {
             </div>
             <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
               {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+            </Button>
+            <Button type="button" variant="accent" size="lg" className="w-full" disabled={loading} onClick={handleDemoAccess}>
+              Masuk demo instan
             </Button>
           </form>
 
