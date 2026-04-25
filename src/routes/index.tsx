@@ -58,7 +58,7 @@ function Landing() {
                   Open your wallet <ArrowRight className="ml-1 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/auth" search={{ demo: true } as never}>
                 <Button variant="glass" size="xl">View demo</Button>
               </Link>
             </div>
