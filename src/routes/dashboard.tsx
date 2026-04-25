@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { CURRENCIES, CURRENCY_META, formatMoney, formatRelative, type Currency } from "@/lib/format";
 import { convert, pairRate, recommend, type FxPoint } from "@/lib/fx";
 import { evaluateFraud, type FraudResult } from "@/lib/fraud";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -22,6 +23,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
+  Link2,
+  BadgeCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
