@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Logo } from "@/components/Logo";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -290,55 +291,58 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <div aria-hidden className="pointer-events-none fixed inset-0 grid-pattern opacity-30" />
       <Toaster theme="dark" richColors />
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-mint text-primary-foreground font-bold">N</div>
-          <span className="font-display text-xl font-semibold">NusaWallet</span>
-        </Link>
+      <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+        <Logo />
         <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-muted-foreground sm:inline">Hi, {fullName || "there"}</span>
+          <span className="hidden text-sm text-muted-foreground sm:inline">Hi, <span className="text-foreground font-medium">{fullName || "there"}</span></span>
           <Button variant="glass" size="sm" onClick={handleLogout}><LogOut className="h-4 w-4" /> Sign out</Button>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 pb-20">
         {/* Total + actions */}
-        <section className="glass rounded-3xl p-6 md:p-8 shadow-card">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <section className="glass rounded-3xl p-6 md:p-8 shadow-card relative overflow-hidden">
+          <div aria-hidden className="pointer-events-none absolute -top-24 -left-20 h-64 w-64 rounded-full bg-primary/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-20 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="text-sm text-muted-foreground">Total balance (USD)</div>
-              <div className="font-display text-4xl md:text-5xl font-semibold mt-1">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Total balance · USD</div>
+              <div className="font-display text-4xl md:text-5xl font-semibold mt-2 text-gradient-bicolor">
                 {formatMoney(totalUsd, "USD")}
               </div>
-              <div className="mt-1 text-sm text-muted-foreground">Across {wallets.length} currencies</div>
+              <div className="mt-2 text-sm text-muted-foreground">Across {wallets.length} currencies</div>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button variant="hero" size="lg" onClick={handleReceiveDemo}>
-                <ArrowDownLeft className="h-4 w-4" /> Receive (demo)
+                <ArrowDownLeft className="h-4 w-4" /> Receive
               </Button>
               <Button variant="glass" size="lg" onClick={() => setConvertOpen(true)}>
                 <ArrowRightLeft className="h-4 w-4" /> Convert
               </Button>
-              <Button variant="glass" size="lg" onClick={() => setSendOpen(true)}>
+              <Button variant="accent" size="lg" onClick={() => setSendOpen(true)}>
                 <ArrowUpRight className="h-4 w-4" /> Send
               </Button>
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {CURRENCIES.map((c) => {
+          <div className="relative mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {CURRENCIES.map((c, i) => {
               const meta = CURRENCY_META[c];
               const bal = balanceOf(c);
+              const isPrimary = i % 2 === 0;
               return (
-                <div key={c} className="rounded-2xl bg-gradient-card p-4 border border-border">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span className="flex items-center gap-2"><span className="text-base">{meta.flag}</span>{c}</span>
-                    <span className="text-xs">{meta.name}</span>
+                <div key={c} className="group rounded-2xl bg-gradient-card p-4 border border-border relative overflow-hidden transition-transform hover:-translate-y-0.5">
+                  <div aria-hidden className={`absolute -right-8 -top-8 h-20 w-20 rounded-full ${isPrimary ? "bg-primary/25" : "bg-accent/25"} blur-2xl`} />
+                  <div aria-hidden className={`absolute left-0 top-0 h-full w-0.5 ${isPrimary ? "bg-gradient-primary" : "bg-gradient-accent"}`} />
+                  <div className="relative flex items-center justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-2"><span className="text-base">{meta.flag}</span><span className="font-medium text-foreground">{c}</span></span>
+                    <span className="text-[10px] uppercase tracking-wider">{meta.name.split(" ")[0]}</span>
                   </div>
-                  <div className="mt-3 font-display text-xl font-semibold">{formatMoney(bal, c)}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
+                  <div className="relative mt-3 font-display text-xl font-semibold">{formatMoney(bal, c)}</div>
+                  <div className="relative mt-1 text-xs text-muted-foreground">
                     ≈ {formatMoney(convert(bal, c, "USD", ratesPerUsd), "USD")}
                   </div>
                 </div>
