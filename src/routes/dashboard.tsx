@@ -121,6 +121,8 @@ function Dashboard() {
   }, [navigate, isDemo]);
 
   const loadAll = useCallback(async (uid: string) => {
+    if (isDemo) return;
+
     const [{ data: profile }, { data: w }, { data: t }, { data: fx }] = await Promise.all([
       supabase.from("profiles").select("full_name").eq("id", uid).maybeSingle(),
       supabase.from("wallets").select("id,currency,balance").eq("user_id", uid),
@@ -131,14 +133,14 @@ function Dashboard() {
     setWallets((w ?? []) as Wallet[]);
     setTxs((t ?? []) as Tx[]);
 
-    const grouped: Record<Currency, FxPoint[]> = { IDR: [], USD: [{ recorded_at: new Date().toISOString(), rate: 1 }], SGD: [], MYR: [] };
+    const grouped: Record<Currency, FxPoint[]> = { IDR: [], USD: [{ recorded_at: DEMO_NOW, rate: 1 }], SGD: [], MYR: [] };
     for (const row of fx ?? []) {
       const q = row.quote as Currency;
       if (q in grouped) grouped[q].push({ recorded_at: row.recorded_at, rate: Number(row.rate) });
     }
     setFxHistory(grouped);
     setLoading(false);
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     if (userId) loadAll(userId);
