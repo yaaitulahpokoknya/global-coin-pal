@@ -290,15 +290,13 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <div aria-hidden className="pointer-events-none fixed inset-0 grid-pattern opacity-30" />
       <Toaster theme="dark" richColors />
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-mint text-primary-foreground font-bold">N</div>
-          <span className="font-display text-xl font-semibold">NusaWallet</span>
-        </Link>
+      <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+        <Logo />
         <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-muted-foreground sm:inline">Hi, {fullName || "there"}</span>
+          <span className="hidden text-sm text-muted-foreground sm:inline">Hi, <span className="text-foreground font-medium">{fullName || "there"}</span></span>
           <Button variant="glass" size="sm" onClick={handleLogout}><LogOut className="h-4 w-4" /> Sign out</Button>
         </div>
       </header>
