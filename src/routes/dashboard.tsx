@@ -328,18 +328,21 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {CURRENCIES.map((c) => {
+          <div className="relative mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {CURRENCIES.map((c, i) => {
               const meta = CURRENCY_META[c];
               const bal = balanceOf(c);
+              const isPrimary = i % 2 === 0;
               return (
-                <div key={c} className="rounded-2xl bg-gradient-card p-4 border border-border">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span className="flex items-center gap-2"><span className="text-base">{meta.flag}</span>{c}</span>
-                    <span className="text-xs">{meta.name}</span>
+                <div key={c} className="group rounded-2xl bg-gradient-card p-4 border border-border relative overflow-hidden transition-transform hover:-translate-y-0.5">
+                  <div aria-hidden className={`absolute -right-8 -top-8 h-20 w-20 rounded-full ${isPrimary ? "bg-primary/25" : "bg-accent/25"} blur-2xl`} />
+                  <div aria-hidden className={`absolute left-0 top-0 h-full w-0.5 ${isPrimary ? "bg-gradient-primary" : "bg-gradient-accent"}`} />
+                  <div className="relative flex items-center justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-2"><span className="text-base">{meta.flag}</span><span className="font-medium text-foreground">{c}</span></span>
+                    <span className="text-[10px] uppercase tracking-wider">{meta.name.split(" ")[0]}</span>
                   </div>
-                  <div className="mt-3 font-display text-xl font-semibold">{formatMoney(bal, c)}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
+                  <div className="relative mt-3 font-display text-xl font-semibold">{formatMoney(bal, c)}</div>
+                  <div className="relative mt-1 text-xs text-muted-foreground">
                     ≈ {formatMoney(convert(bal, c, "USD", ratesPerUsd), "USD")}
                   </div>
                 </div>
